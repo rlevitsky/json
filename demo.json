@@ -1,0 +1,94 @@
+{
+  "cod": "200",
+  "message": 0,
+  "cnt": 20,
+  "list": [
+    {
+      "dt": 1789419600,
+      "main": {
+        "temp": 289.05,
+        "feels_like": 288.45,
+        "temp_min": 289.05,
+        "temp_max": 289.05,
+        "pressure": 1018,
+        "sea_level": 1018,
+        "grnd_level": 1016,
+        "humidity": 67,
+        "temp_kf": 0,
+        "dew_point": 283.06
+      },
+      "weather": [
+        {
+          "id": 801,
+          "main": "Clouds",
+          "description": "\u043d\u0435\u0431\u043e\u043b\u044c\u0448\u0430\u044f \u043e\u0431\u043b\u0430\u0447\u043d\u043e\u0441\u0442\u044c",
+          "icon": "02n"
+        }
+      ],
+      "clouds": {
+        "all": 20
+      },
+      "wind": {
+        "speed": 4.97,
+        "deg": 327,
+        "gust": 7.88
+      },
+      "visibility": 10000,
+      "pop": 0,
+      "sys": {
+        "pod": "n"
+      },
+      "dt_txt": "2026-09-14 21:00:00"
+    },
+    {
+      "dt": 1789430400,
+      "main": {
+        "temp": 288.87,
+        "feels_like": 288.22,
+        "temp_min": 288.87,
+        "temp_max": 288.87,
+        "pressure": 1019,
+        "sea_level": 1019,
+        "grnd_level": 1016,
+        "humidity": 66,
+        "temp_kf": 0,
+        "dew_point": 282.67
+      },
+      "weather": [
+        {
+          "id": 802,
+          "main": "Clouds",
+          "description": "\u043f\u0435\u0440\u0435\u043c\u0435\u043d\u043d\u0430\u044f \u043e\u0431\u043b\u0430\u0447\u043d\u043e\u0441\u0442\u044c",
+          "icon": "03n"
+        }
+      ],
+      "clouds": {
+        "all": 44
+      },
+      "wind": {
+        "speed": 5.65,
+        "deg": 322,
+        "gust": 9.19
+      },
+      "visibility": 10000,
+      "pop": 0,
+      "sys": {
+        "pod": "n"
+      },
+      "dt_txt": "2026-09-15 00:00:00"
+    }
+  ],
+  "city": {
+    "id": 707688,
+    "name": "\u0418\u043b\u044c\u0438\u0447\u0435\u0432\u0441\u043a",
+    "coord": {
+      "lat": 46.305,
+      "lon": 30.6548
+    },
+    "country": "UA",
+    "population": 0,
+    "timezone": 10800,
+    "sunrise": 1789183877,
+    "sunset": 1789229794
+  }
+}
