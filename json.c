@@ -26,8 +26,8 @@ char *get_json_value (char *src_json, char *inkey)
 {
   char key[64];
   char *begin, *end, *bracket, *sbracket, *result;
-  char *str, *token, *ktoken, *value;
-  char *sptr, *kptr;
+  char *str, *ktoken, *value;
+  char *kptr;
   size_t len, rlen, token_len;
 
   if(!inkey) return NULL;
@@ -91,22 +91,90 @@ char *get_json_value (char *src_json, char *inkey)
       return result;
     }
     /* We don't see curly bracket or square bracket, or they are after comma
-     * so we just get what's inside double quotes */
+     * so we just get what's inside double quotes, or the raw scalar text
+     * (number, true, false, null) if the value isn't quoted */
     else {
-      result = malloc(end-begin+1);
-      memcpy(result, begin, end-begin+1);
-      token = strtok_r(result, "{:,\"} \n", &sptr);
-      if (token) {
-        token_len = strlen(token) + 1;
-        value = malloc(token_len);
-        memcpy(value, token, token_len);
-        free(result);
-        return value;
+      begin++; /* step past ':' */
+      while (*begin == ' ' || *begin == '\t' || *begin == '\n' || *begin == '\r') begin++;
+
+      if (*begin == '"') {
+        /* Quoted string: take everything up to the matching closing quote,
+         * so spaces inside the value (e.g. multi-word text) are preserved */
+        begin++; /* step past opening quote */
+        end = strchr(begin, '"');
+        if (!end) return NULL;  // Unterminated string, invalid JSON
+      } else {
+        /* Unquoted scalar (number, true, false, null): stops at the next
+         * structural delimiter or whitespace */
+        end = begin;
+        while (*end && *end != ',' && *end != '}' && *end != ']' &&
+               *end != ' ' && *end != '\t' && *end != '\n' && *end != '\r') end++;
       }
-      free(result);
-      return NULL;
+
+      token_len = (size_t)(end - begin);
+      value = malloc(token_len + 1);
+      memcpy(value, begin, token_len);
+      value[token_len] = '\0';
+      return value;
     }
   }
   /* No requested key found */
+  return NULL;
+}
+
+/* Search a JSON array for the first element whose given key's value
+ * exactly matches 'needle'. 'array_json' must be the text of
+ * a JSON array (e.g. the result of get_json_value() for an array key).
+ * 'key' may be a dotted path, same as get_json_value().
+ * Returns a newly-allocated copy of the whole matching element
+ * (object/array/scalar text), or NULL if nothing matched or on
+ * malformed input. Caller must free() the result. */
+char *get_json_array_item (char *array_json, char *key, char *needle)
+{
+  char *p, *elem_start, *elem_end, *element, *value;
+  size_t elem_len;
+
+  if (!array_json || !key || !needle) return NULL;
+
+  p = strchr(array_json, '[');
+  if (!p) return NULL;
+  p++; /* step past '[' */
+
+  while (*p) {
+    /* skip separators between elements */
+    while (*p == ',' || *p == ' ' || *p == '\n' || *p == '\t' || *p == '\r') p++;
+    if (*p == ']' || *p == '\0') break; /* end of array, no match */
+
+    elem_start = p;
+    if (*p == '{') {
+      elem_end = find_matching_bracket(p, '{', '}');
+    } else if (*p == '[') {
+      elem_end = find_matching_bracket(p, '[', ']');
+    } else if (*p == '"') {
+      elem_end = strchr(p + 1, '"');
+    } else {
+      elem_end = p;
+      while (*elem_end && *elem_end != ',' && *elem_end != ']') elem_end++;
+      elem_end--; /* step back onto the last real character */
+    }
+    if (!elem_end) break; /* malformed JSON */
+
+    elem_len = elem_end - elem_start + 1;
+    element = malloc(elem_len + 1);
+    memcpy(element, elem_start, elem_len);
+    element[elem_len] = '\0';
+
+    value = get_json_value(element, key);
+    if (value) {
+      if (strcmp(value, needle) == 0) {
+        free(value);
+        return element; /* match found, caller frees */
+      }
+      free(value);
+    }
+    free(element);
+
+    p = elem_end + 1; /* resume after this element */
+  }
   return NULL;
 }
