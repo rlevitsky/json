@@ -44,6 +44,7 @@ char *get_json_value (char *src_json, char *inkey)
     while (ktoken != NULL) {
         str = get_json_value(str, ktoken);
         if (!str) return NULL;  // Stop if recursive call fails
+        free(str);
         ktoken = strtok_r(NULL, ".", &kptr);
     }
     return str;
