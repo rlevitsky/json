@@ -26,8 +26,9 @@ char *get_json_value (char *src_json, char *inkey)
 {
   char key[64];
   char *begin, *end, *bracket, *sbracket, *result;
-  char *str, *ktoken, *value;
+  char *ktoken, *value;
   char *kptr;
+  char *curr_str, *next_str;
   size_t len, rlen, token_len;
 
   if(!inkey) return NULL;
@@ -38,16 +39,19 @@ char *get_json_value (char *src_json, char *inkey)
     if (rlen > 63) rlen = 63;
     memcpy(key, inkey, rlen);
     memset(&key[rlen], 0, 1);
-
     ktoken = strtok_r(key, ".", &kptr);
-    str = src_json;
+    curr_str = src_json;
+    next_str = NULL;
     while (ktoken != NULL) {
-        str = get_json_value(str, ktoken);
-        if (!str) return NULL;  // Stop if recursive call fails
-        free(str);
+        next_str = get_json_value(curr_str, ktoken);
+        if (curr_str != src_json) {
+            free(curr_str);
+        }
+        if (!next_str) return NULL;
+        curr_str = next_str;
         ktoken = strtok_r(NULL, ".", &kptr);
     }
-    return str;
+    return curr_str;
   }
 
   /* Wrap the key in double quote */
