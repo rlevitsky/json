@@ -65,11 +65,11 @@ char *get_json_value (char *src_json, char *inkey)
   begin = strstr(src_json, key);
   if (begin) {
     begin = strstr(begin,":");
-    if (!begin) return NULL;  // Colon not found, invalid JSON
+    if (!begin) return NULL;  /* Colon not found, invalid JSON */
 
     end = strstr(begin,",");
     if(!end) end = strstr(begin,"}");
-    if (!end) return NULL;  // No delimiter found
+    if (!end) return NULL;  /* No delimiter found */
 
     bracket = strstr(begin,"{"); 
     sbracket = strstr(begin,"["); 
@@ -107,7 +107,7 @@ char *get_json_value (char *src_json, char *inkey)
          * so spaces inside the value (e.g. multi-word text) are preserved */
         begin++; /* step past opening quote */
         end = strchr(begin, '"');
-        if (!end) return NULL;  // Unterminated string, invalid JSON
+        if (!end) return NULL;  /* Unterminated string, invalid JSON */
       } else {
         /* Unquoted scalar (number, true, false, null): stops at the next
          * structural delimiter or whitespace */
